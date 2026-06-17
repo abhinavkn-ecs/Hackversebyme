@@ -1,4 +1,6 @@
-# PhishGuard AI – Free, Zero‑Cost Phishing Detection Demo
+# Hackversebyme
+
+PhishGuard AI is a zero-cost, privacy-first phishing detection web app that performs client-side text and URL analysis using heuristic pattern matching and risk scoring. No backend services, no external APIs, and no data transmission beyond the browser.
 
 ## Overview
 This is a **completely free** web‑based prototype that lets users paste any text (email, SMS, message, URL) and instantly receive a **risk score** using client‑side keyword heuristics. No external APIs, no paid services, and no server‑side components – everything runs in the browser.
