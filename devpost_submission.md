@@ -14,13 +14,12 @@ Linguistic attacks and credential harvesting scams are the primary threat vector
    $$\text{Threat Index} = \min\left(100, \frac{\sum (\text{Category Score} \times \text{Category Weight})}{\sum \text{Category Weight}}\right)$$
 2. **Lexical Regex Highlight Engine**: Sorts patterns by length and maps matches to styling wrappers, color-coding risk phrases.
 3. **Heuristic Domain Auditor**: Breaks down URLs to check for HTTPS presence, redirect shortening loops, lexical spoof patterns, hyphen parameters, and query signatures against an extensible brand database.
-4. **LLM contextual summary**: For scores > 30, it securely triggers the Anthropic Claude API (claude-3-5-sonnet) directly from the client side to generate a 2-sentence contextual explanation.
+4. **Local Heuristic Summary**: For scores > 30, a client-side rule engine synthesizes a 2-sentence contextual explanation instantly based on the specific threats detected.
 5. **Local Logging**: Stores historical session logs in localStorage for complete offline integrity.
 
 ### Technologies Used
-- HTML5, CSS3 (glassmorphism/dark mode system)
+- HTML5, CSS3 (glassmorphism/dark-cyber style system)
 - Vanilla ES2022 JavaScript
-- Anthropic Claude API (direct client-side access)
 - Browser LocalStorage API
 
 ### What Makes it Unique
