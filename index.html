@@ -3,558 +3,177 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PhishGuard AI – Enterprise-Grade Phishing & Threat Detection</title>
-  <meta name="description" content="A professional, local-first phishing analysis utility. Inspect email headers, message bodies, and domains for security vulnerabilities instantly."/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <title>PhishGuard Secure – Clean Minimal Threat Detection Console</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar" id="navbar">
-  <div class="nav-inner">
-    <div class="nav-brand" onclick="showPage('landing')">
-      <svg class="brand-shield-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px; color: var(--primary);">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-      </svg>
-      <span>PHISHGUARD <span class="accent">SECURE</span></span>
+<div class="container">
+  <!-- Brand Header -->
+  <header>
+    <div>
+      <h1>PhishGuard Secure</h1>
+      <div class="subtitle">Local-first explainable threat intelligence sandbox.</div>
     </div>
-    <div class="nav-links" id="mainNav">
-      <button class="nav-btn active" onclick="showPage('landing')" id="nb-landing">Overview</button>
-      <button class="nav-btn" onclick="showPage('scanner')" id="nb-scanner">Message Inspect</button>
-      <button class="nav-btn" onclick="showPage('url')" id="nb-url">Domain Inspect</button>
-      <button class="nav-btn" onclick="showPage('dashboard')" id="nb-dashboard">Analytics</button>
-      <button class="nav-btn" onclick="showPage('about')" id="nb-about">Specifications</button>
+    
+    <!-- Anthropic API Settings -->
+    <div class="api-settings">
+      <label for="apiKeyInput">Anthropic API Key:</label>
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-..." autocomplete="off"/>
     </div>
-    <button class="cta-nav-btn" onclick="showPage('scanner')">Launch Analyzer</button>
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">☰</button>
-  </div>
-  <div class="mobile-menu hidden" id="mobileMenu">
-    <button onclick="showPage('landing');toggleMenu()">Overview</button>
-    <button onclick="showPage('scanner');toggleMenu()">Message Inspect</button>
-    <button onclick="showPage('url');toggleMenu()">Domain Inspect</button>
-    <button onclick="showPage('dashboard');toggleMenu()">Analytics</button>
-    <button onclick="showPage('about');toggleMenu()">Specifications</button>
-  </div>
-</nav>
+  </header>
 
-<!-- PAGE: LANDING -->
-<div class="page active" id="page-landing">
-
-  <!-- Hero -->
-  <section class="hero-section">
-    <div class="hero-content">
-      <div class="hero-badge">SECURE PIPELINE // HACKVERSE X 2026</div>
-      <h1 class="hero-h1">Real-time local threat intelligence.<br><span class="gradient-text">Zero data leakage.</span></h1>
-      <p class="hero-p">PhishGuard is a high-precision static threat analyzer running fully client-side. Inspect potential spear-phishing payloads, suspicious domains, and credential harvesting templates without sending sensitive data to external networks.</p>
-      <div class="hero-actions">
-        <button class="btn-primary" onclick="showPage('scanner')">Inspect Message</button>
-        <button class="btn-outline" onclick="showPage('url')">Analyze Domain</button>
-      </div>
-      <div class="hero-stats">
-        <div class="stat-item"><span class="stat-num" data-target="97">0</span><span class="stat-pct">%</span><p>Accuracy Rate</p></div>
-        <div class="stat-sep"></div>
-        <div class="stat-item"><span class="stat-num" data-target="7">0</span><p>Engine Layers</p></div>
-        <div class="stat-sep"></div>
-        <div class="stat-item"><span class="stat-num" data-target="200">0</span><span class="stat-pct">+</span><p>Threat Profiles</p></div>
-        <div class="stat-sep"></div>
-        <div class="stat-item"><span class="stat-num" data-target="0">0</span><p>Data Cost</p></div>
-      </div>
-    </div>
-    <div class="hero-mockup">
-      <div class="mockup-card">
-        <div class="mockup-header">
-          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-          <span class="mockup-title">PHISHGUARD://LOCAL_ANALYZER</span>
-        </div>
-        <div class="mockup-body">
-          <div class="mockup-label">Payload Stream</div>
-          <div class="mockup-input">Your profile access has been <mark class="m-urgency">suspended</mark>. Please <mark class="m-cred">confirm credentials</mark> to verify identity: <mark class="m-url">secure-portal.xyz</mark></div>
-          <div class="mockup-score-row">
-            <span class="mockup-badge critical">SEV-1: CRITICAL</span>
-            <span class="mockup-score-val">89/100</span>
-          </div>
-          <div class="mockup-bar-wrap"><div class="mockup-bar-fill" style="width:89%"></div></div>
-          <div class="mockup-cats">
-            <div class="mc-row"><span>Urgency Signature</span><span class="mc-val high">MATCH</span></div>
-            <div class="mc-row"><span>Harvesting Pattern</span><span class="mc-val high">MATCH</span></div>
-            <div class="mc-row"><span>Untrusted Domain</span><span class="mc-val high">MATCH</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features -->
-  <section class="features-section">
-    <div class="section-header">
-      <h2>Inspection Architecture</h2>
-      <p>Multi-layered detection mechanisms for static threat categorization.</p>
-    </div>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="fc-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-        </div>
-        <h3>7-Layer Parser</h3>
-        <p>Parallel processing of urgency tags, credential harvest structures, shortened link targets, financial bait, brand impersonation, and personal data queries.</p>
-      </div>
-      <div class="feature-card">
-        <div class="fc-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-        </div>
-        <h3>Explainable Threat Score</h3>
-        <p>Generates detailed risk weights with marked-up phrase matches, allowing engineers to trace exactly why the threat was flagged.</p>
-      </div>
-      <div class="feature-card">
-        <div class="fc-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-        </div>
-        <h3>Hermetic Execution</h3>
-        <p>No external network requests are made during analysis. Operations are isolated within the browser memory space to prevent info leaks.</p>
-      </div>
-      <div class="feature-card">
-        <div class="fc-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-          </svg>
-        </div>
-        <h3>Deterministic Diagnostics</h3>
-        <p>Static signature verification executes instantly. Avoids server latency, processing queues, API rate limits, or usage charges.</p>
-      </div>
-      <div class="feature-card">
-        <div class="fc-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
-            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
-          </svg>
-        </div>
-        <h3>Incident Logging</h3>
-        <p>Local state management monitors diagnostic history, tracking recurring threat patterns and incident volume on your workstation.</p>
-      </div>
-      <div class="feature-card">
-        <div class="fc-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
-          </svg>
-        </div>
-        <h3>Structured Export</h3>
-        <p>Compile diagnostic results into standardized threat intelligence report logs to quickly dispatch reports to security teams.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- How it works -->
-  <section class="how-section">
-    <div class="section-header">
-      <h2>Pipeline Workflow</h2>
-      <p>The structured analysis sequence applied to payload streams.</p>
-    </div>
-    <div class="how-steps">
-      <div class="how-step">
-        <div class="step-num">01 // INGEST</div>
-        <div class="step-content">
-          <h3>Load Raw Stream</h3>
-          <p>Input text blocks, raw email payloads, SMS copy, or suspicious link addresses into the system.</p>
-        </div>
-      </div>
-      <div class="how-step">
-        <div class="step-num">02 // INSPECT</div>
-        <div class="step-content">
-          <h3>Signature Scan</h3>
-          <p>The heuristics parser tests the payload against more than 200 high-risk structural pattern vectors.</p>
-        </div>
-      </div>
-      <div class="how-step">
-        <div class="step-num">03 // EVALUATE</div>
-        <div class="step-content">
-          <h3>Weighted Weighting</h3>
-          <p>Scores are mathematically balanced by threat priority to output a clean severity assessment metrics.</p>
-        </div>
-      </div>
-      <div class="how-step">
-        <div class="step-num">04 // REPORT</div>
-        <div class="step-content">
-          <h3>Generate Intelligence</h3>
-          <p>Review threat categories, mark-up indexes, and extract checklists for immediate mitigation.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Threat Types -->
-  <section class="threats-section">
-    <div class="section-header">
-      <h2>Threat Matrices Covered</h2>
-      <p>Supported signatures for standard network fraud and social manipulation attacks.</p>
-    </div>
-    <div class="threats-grid">
-      <div class="threat-tag">Email Phishing</div>
-      <div class="threat-tag">SMS Smishing</div>
-      <div class="threat-tag">WhatsApp Redirects</div>
-      <div class="threat-tag">Malicious Domains</div>
-      <div class="threat-tag">Brand Spoofing</div>
-      <div class="threat-tag">Advance-Fee Schemes</div>
-      <div class="threat-tag">Fake Notifications</div>
-      <div class="threat-tag">Banking Gateway Impersonation</div>
-      <div class="threat-tag">Business Email Compromise</div>
-      <div class="threat-tag">Credential Theft</div>
-      <div class="threat-tag">Identity Extraction</div>
-      <div class="threat-tag">Skimming Gateways</div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="cta-section">
-    <div class="cta-box">
-      <h2>Access Local Threat Console</h2>
-      <p>Secure, fully offline-compatible utility. Ready to process static text strings immediately.</p>
-      <button class="btn-primary large" onclick="showPage('scanner')">Open Inspector Console</button>
-    </div>
-  </section>
-
-</div><!-- /page-landing -->
-
-<!-- PAGE: SCANNER -->
-<div class="page hidden" id="page-scanner">
-  <div class="page-header">
-    <h1>Message Threat Analyzer</h1>
-    <p>Submit suspicious copy to analyze linguistic and structural phishing indicators.</p>
-  </div>
-  <div class="scanner-layout">
-    <!-- Left: Input -->
-    <div class="scanner-input-col">
+  <!-- Two-Column Desktop Dashboard -->
+  <div class="main-grid">
+    
+    <!-- Left Column: Inputs & Highlight View -->
+    <div class="col-left">
+      <!-- Input Card -->
       <div class="card">
-        <label class="field-label">Target Text Buffer</label>
-        <textarea id="scanInput" class="textarea" rows="12" placeholder="Paste message copy, raw headers, or notification texts here..."></textarea>
-        <div class="input-footer">
-          <span id="scanCharCount" class="char-count">0 bytes</span>
-          <div class="input-actions">
-            <button class="btn-ghost" id="scanSampleBtn">Load Test Target</button>
-            <button class="btn-ghost" id="scanClearBtn">Flush Buffer</button>
-          </div>
+        <div class="card-title">Threat Scan Console</div>
+        
+        <div class="form-group">
+          <label for="scanInput">Target Message / Email Copy</label>
+          <textarea id="scanInput" class="form-textarea" placeholder="Paste email body text, headers, or SMS notification copy here..."></textarea>
+          <div id="validationError" class="error-msg">Please paste a message or email to scan.</div>
         </div>
-        <button class="btn-primary full-width" id="scanDetectBtn">
-          <span class="btn-spinner hidden" id="scanSpinner">⏳</span> Scan Payload
-        </button>
-        <div id="scanLoadBar" class="load-bar hidden"><div class="load-fill"></div></div>
+
+        <div class="form-group">
+          <label for="urlInput">Domain / Link (Optional)</label>
+          <input type="text" id="urlInput" class="form-input" placeholder="e.g. login-secure-paypal.xyz or https://secure-verification.com"/>
+        </div>
+
+        <!-- Button actions -->
+        <div class="button-row">
+          <button id="scanDetectBtn" class="btn btn-primary">Scan Payload</button>
+          <button id="scanClearBtn" class="btn btn-secondary">Clear & Reset</button>
+        </div>
+
+        <!-- Safe message banner -->
+        <div id="safeMessageBanner" class="safe-message-banner" style="display: none;">
+          <span>✓</span> This message looks safe. No phishing patterns detected.
+        </div>
       </div>
 
-      <!-- Tips card -->
-      <div class="card tips-card">
-        <h3>Inspection Guidance</h3>
-        <ul class="tips-list">
-          <li>Include header copy if analyzing raw SMTP formats.</li>
-          <li>Ensure links are pasted cleanly to check anchor text mismatches.</li>
-          <li>Flag messages requesting sudden changes in multi-factor authentication setup.</li>
-          <li>Review spelling modifications designed to bypass gateway filters.</li>
-        </ul>
+      <!-- Highlight Card -->
+      <div class="card">
+        <div class="card-title">Payload Highlight View</div>
+        <div id="highlightText" class="highlight-view-box">Scan output highlights will appear here...</div>
+        
+        <!-- Legend of colors -->
+        <div class="color-legend">
+          <div class="legend-item">
+            <span class="legend-dot" style="background-color: var(--hl-urgency-bg); border: 1px solid var(--hl-urgency-text);"></span>
+            <span>Urgency</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background-color: var(--hl-cred-bg); border: 1px solid var(--hl-cred-text);"></span>
+            <span>Harvesting</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background-color: var(--hl-url-bg); border: 1px solid var(--hl-url-text);"></span>
+            <span>Untrusted Domain</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background-color: var(--hl-finance-bg); border: 1px solid var(--hl-finance-text);"></span>
+            <span>Financial Bait</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background-color: var(--hl-social-bg); border: 1px solid var(--hl-social-text);"></span>
+            <span>Social Engineering</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background-color: var(--hl-imperson-bg); border: 1px solid var(--hl-imperson-text);"></span>
+            <span>Brand Impersonation</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background-color: var(--hl-sensitive-bg); border: 1px solid var(--hl-sensitive-text);"></span>
+            <span>Sensitive Info</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Right: Results -->
-    <div class="scanner-result-col">
-      <div id="scanPlaceholder" class="result-placeholder">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 32px; height: 32px; color: var(--text-dark); margin-bottom: 0.75rem;">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        </svg>
-        <p>Scanner standby. Submit a text buffer to initiate heuristics analysis.</p>
-      </div>
-
-      <div id="scanResult" class="hidden">
-        <!-- Score -->
-        <div class="card score-card">
-          <div class="score-flex">
-            <div class="ring-container">
-              <svg class="ring-svg" viewBox="0 0 120 120">
-                <circle class="ring-bg" cx="60" cy="60" r="50"/>
-                <circle class="ring-progress" id="scanRing" cx="60" cy="60" r="50"/>
-              </svg>
-              <div class="ring-label">
-                <span id="scanScoreNum" class="ring-score">0</span>
-                <span class="ring-sub">/100</span>
-              </div>
-            </div>
-            <div class="score-details">
-              <div id="scanBadge" class="risk-badge"></div>
-              <p id="scanSummary" class="risk-summary-text"></p>
-              <div class="score-actions">
-                <button class="btn-ghost small" id="scanCopyBtn">Copy Threat Log</button>
-                <button class="btn-ghost small" onclick="showPage('dashboard')">View Metrics</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Breakdown -->
+    <!-- Right Column: Results Section -->
+    <div class="col-right">
+      <div id="scanResult" style="display: none;">
+        <!-- Score Card -->
         <div class="card">
-          <h3 class="card-title">Analysis Category Breakdown</h3>
-          <div id="scanBreakdown" class="breakdown-rows"></div>
+          <div class="card-title">Composite Threat Index</div>
+          <div class="score-badge-container">
+            <div class="score-display" id="scoreNum">0<span>/100</span></div>
+            <span id="severityBadge" class="severity-badge">Safe</span>
+          </div>
         </div>
 
-        <!-- Highlighted -->
+        <!-- Explainer Panel (Threat Breakdown) -->
         <div class="card">
-          <h3 class="card-title">Flagged Pattern Highlights</h3>
-          <div id="scanHighlight" class="highlight-box"></div>
+          <div class="card-title">Threat Breakdown</div>
+          <div id="breakdownPanel" class="explain-list">
+            <!-- Dynamically populated categories -->
+          </div>
         </div>
 
-        <!-- Psychology -->
+        <!-- AI Analysis -->
         <div class="card">
-          <h3 class="card-title">Threat Mechanism Explanation</h3>
-          <p id="scanPsych" class="body-text"></p>
-        </div>
-
-        <!-- Advice -->
-        <div class="card advice-card">
-          <h3 class="card-title">Recommended Action Protocol</h3>
-          <ul id="scanAdvice" class="advice-ul"></ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div><!-- /page-scanner -->
-
-<!-- PAGE: URL CHECKER -->
-<div class="page hidden" id="page-url">
-  <div class="page-header">
-    <h1>Domain Integrity Checker</h1>
-    <p>Analyze links and hostnames for spoofing tricks and sub-domain redirection structures.</p>
-  </div>
-  <div class="url-layout">
-    <div class="card url-input-card">
-      <label class="field-label">Target URL / Hostname</label>
-      <div class="url-input-row">
-        <input type="text" id="urlInput" class="url-input" placeholder="https://example-domain.com/path..."/>
-        <button class="btn-primary" id="urlCheckBtn">Audit Domain</button>
-      </div>
-      <div class="url-samples">
-        <span class="sample-label">Test presets:</span>
-        <button class="tag-btn" onclick="loadUrlSample('safe')">Secure Hostname</button>
-        <button class="tag-btn" onclick="loadUrlSample('phish')">Suspicious Hostname</button>
-        <button class="tag-btn" onclick="loadUrlSample('short')">Shortened Redirect</button>
-      </div>
-    </div>
-
-    <div id="urlResult" class="hidden">
-      <div class="url-results-grid">
-        <div class="card url-score-card">
-          <div class="ring-container small-ring">
-            <svg class="ring-svg" viewBox="0 0 120 120">
-              <circle class="ring-bg" cx="60" cy="60" r="50"/>
-              <circle class="ring-progress" id="urlRing" cx="60" cy="60" r="50"/>
-            </svg>
-            <div class="ring-label">
-              <span id="urlScoreNum" class="ring-score">0</span>
-              <span class="ring-sub">/100</span>
-            </div>
-          </div>
-          <div id="urlBadge" class="risk-badge" style="margin-top:1rem"></div>
-          <p id="urlSummary" class="body-text" style="margin-top:0.5rem;text-align:center"></p>
-        </div>
-        <div class="card url-checks-card">
-          <h3 class="card-title">Structural Audit Log</h3>
-          <div id="urlChecks" class="url-checks-list"></div>
-        </div>
-      </div>
-      <div class="card">
-        <h3 class="card-title">Handling Guidelines</h3>
-        <p id="urlAdvice" class="body-text"></p>
-      </div>
-    </div>
-  </div>
-</div><!-- /page-url -->
-
-<!-- PAGE: DASHBOARD -->
-<div class="page hidden" id="page-dashboard">
-  <div class="page-header">
-    <h1>Security Operations Metrics</h1>
-    <p>Local workstation session logs, threat indices, and classification distribution.</p>
-  </div>
-
-  <!-- Stats row -->
-  <div class="dash-stats-row" id="dashStats">
-    <div class="dash-stat-card">
-      <div class="ds-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-      </div>
-      <div class="ds-val" id="dsTotalScans">0</div>
-      <div class="ds-label">Audited Logs</div>
-    </div>
-    <div class="dash-stat-card">
-      <div class="ds-icon" style="color: var(--danger);">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
-          <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-      </div>
-      <div class="ds-val danger" id="dsHighRisk">0</div>
-      <div class="ds-label">High / Critical</div>
-    </div>
-    <div class="dash-stat-card">
-      <div class="ds-icon" style="color: var(--warn);">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-        </svg>
-      </div>
-      <div class="ds-val warn" id="dsMedRisk">0</div>
-      <div class="ds-label">Medium Risk</div>
-    </div>
-    <div class="dash-stat-card">
-      <div class="ds-icon" style="color: var(--success);">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-      </div>
-      <div class="ds-val success" id="dsLowRisk">0</div>
-      <div class="ds-label">Low Risk</div>
-    </div>
-  </div>
-
-  <!-- Threat chart -->
-  <div class="dash-row">
-    <div class="card dash-chart-card">
-      <h3 class="card-title">Risk Category Allocation</h3>
-      <div class="chart-container" id="riskChart">
-        <div class="chart-bar-wrap">
-          <div class="chart-bar-col">
-            <div class="chart-bar-track">
-              <div class="chart-bar success-bar" id="cb-low" style="height:0%"></div>
-            </div>
-            <div class="chart-bar-label">LOW</div>
-          </div>
-          <div class="chart-bar-col">
-            <div class="chart-bar-track">
-              <div class="chart-bar warn-bar" id="cb-med" style="height:0%"></div>
-            </div>
-            <div class="chart-bar-label">MED</div>
-          </div>
-          <div class="chart-bar-col">
-            <div class="chart-bar-track">
-              <div class="chart-bar danger-bar" id="cb-high" style="height:0%"></div>
-            </div>
-            <div class="chart-bar-label">HIGH</div>
-          </div>
-          <div class="chart-bar-col">
-            <div class="chart-bar-track">
-              <div class="chart-bar critical-bar" id="cb-crit" style="height:0%"></div>
-            </div>
-            <div class="chart-bar-label">CRIT</div>
+          <div class="card-title">AI Analysis</div>
+          <div class="ai-analysis-text">
+            <span id="aiSpinner" class="spinner" style="display: none;"></span>
+            <span id="aiAnalysisText">AI analysis results will load here...</span>
           </div>
         </div>
-        <div id="emptyChart" class="empty-chart-msg">No entries in the risk allocation index. Run scans to display data.</div>
-      </div>
-    </div>
-    <div class="card dash-avg-card">
-      <h3 class="card-title">Composite Risk Index</h3>
-      <div class="avg-score-display">
-        <div class="ring-container">
-          <svg class="ring-svg" viewBox="0 0 120 120">
-            <circle class="ring-bg" cx="60" cy="60" r="50"/>
-            <circle class="ring-progress" id="avgRing" cx="60" cy="60" r="50"/>
-          </svg>
-          <div class="ring-label">
-            <span id="avgScoreNum" class="ring-score">—</span>
+
+        <!-- Domain Audit -->
+        <div class="card">
+          <div class="card-title-row">
+            <span class="card-title" style="margin: 0; padding: 0; border: none;">Domain Integrity Audit</span>
+            <span class="brand-info-icon-wrapper" id="brandInfoBtn">ℹ️ Brand List</span>
+          </div>
+          
+          <div id="brandListCard" class="brand-list-card">
+            Checks for: PayPal, Google, Apple, Microsoft, Amazon, Netflix, Facebook, Instagram, Bank of America, Chase, Wells Fargo, Citibank, FedEx, UPS, DHL, USPS, DocuSign, Dropbox, Zoom.
+          </div>
+          
+          <div id="domainAuditList" style="margin-top: 0.75rem;">
+            Submit a domain/URL to inspect.
           </div>
         </div>
-        <p id="avgLabel" class="body-text" style="margin-top:1rem;text-align:center">No entries</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Collapsible Logs Panel -->
+  <div class="card history-section" id="historySection">
+    <div class="history-header" id="toggleHistoryBtn">
+      <div class="history-title">Scan History Logs</div>
+      <button id="exportLogsBtn" class="btn btn-secondary btn-ghost small">Export Logs as JSON</button>
+    </div>
+    
+    <div class="history-content">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 20%;">Timestamp</th>
+              <th style="width: 15%;">Threat Index</th>
+              <th style="width: 20%;">Severity Tier</th>
+              <th style="width: 45%;">Payload Preview</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <!-- JavaScript injected log rows -->
+          </tbody>
+        </table>
+      </div>
+      <div class="history-note">
+        Tip: Export your logs regularly — localStorage is cleared if browser data is reset.
       </div>
     </div>
   </div>
 
-  <!-- History table -->
-  <div class="card">
-    <div class="card-title-row">
-      <h3 class="card-title">Execution Log Ledger</h3>
-      <button class="btn-ghost small" id="dashClearBtn">Flush Logs</button>
-    </div>
-    <div id="dashHistory" class="dash-history">
-      <p class="empty-state">No records found. <button class="link-btn" onclick="showPage('scanner')">Initiate payload audit →</button></p>
-    </div>
-  </div>
-</div><!-- /page-dashboard -->
+</div>
 
-<!-- PAGE: ABOUT -->
-<div class="page hidden" id="page-about">
-  <div class="page-header">
-    <h1>Technical Specifications</h1>
-    <p>Engine parameters, implementation architecture, and system roadmap.</p>
-  </div>
-  <div class="about-layout">
-    <div class="card">
-      <h3 class="card-title">Problem Space</h3>
-      <p class="body-text">Social engineering and credentials phishing remain the largest attack surface vectors in workstation compromise. Off-the-shelf security scanners require continuous subscription billing, complex server setups, or submit raw corporate emails to cloud APIs, resulting in dangerous corporate data leakage.</p>
-    </div>
-    <div class="card">
-      <h3 class="card-title">Design Paradigm</h3>
-      <p class="body-text">PhishGuard operates as a local utility. Leveraging a highly optimized static analysis pipeline matching text structures against priority-weighted heuristics, it flags structural warnings right inside browser memory. The execution space is fully decoupled from active networks, maintaining perfect data privacy.</p>
-    </div>
-    <div class="about-grid">
-      <div class="card">
-        <h3 class="card-title">Execution Context</h3>
-        <ul class="tech-list">
-          <li>• Strict Local Sandbox Isolation</li>
-          <li>• Zero External Network Handshakes</li>
-          <li>• Vanilla HTML5 & ES2022 Implementation</li>
-          <li>• LocalStorage Persistence Schema</li>
-          <li>• Optimized CSS Layout Performance</li>
-          <li>• Decoupled State Architecture</li>
-          <li>• Zero Package Dependencies</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3 class="card-title">Inspection Capabilities</h3>
-        <ul class="tech-list">
-          <li>• Multi-layered Parser Engine</li>
-          <li>• Priority-Weighted Severity Rules</li>
-          <li>• Live Match-index Text Markups</li>
-          <li>• Domain Syntax Audit Vectors</li>
-          <li>• Brand Spoofing Dictionaries</li>
-          <li>• Redirection Hostname Profiles</li>
-          <li>• Interactive Audit Logging</li>
-        </ul>
-      </div>
-    </div>
-    <div class="card">
-      <h3 class="card-title">Development Roadmap</h3>
-      <div class="roadmap">
-        <div class="rm-item done">✓ Release v1.0.0 Stable Static Heuristics Engine</div>
-        <div class="rm-item done">✓ Dynamic Signature Highlight Indices</div>
-        <div class="rm-item done">✓ Hostname Lexical Audit Matrix</div>
-        <div class="rm-item done">✓ Workstation Analytics Log Management</div>
-        <div class="rm-item future">○ Client-Side TensorFlow.js Threat Classifier Model (Zero-cost ML integration)</div>
-        <div class="rm-item future">○ Offline Chromium / Firefox Policy Audit Extension</div>
-        <div class="rm-item future">○ RFC822 EML / MSG Structural Header Auditor</div>
-        <div class="rm-item future">○ STIX/TAXII Structured Threat Report Export Schema</div>
-      </div>
-    </div>
-    <div class="card impact-card">
-      <h3 class="card-title">Privacy Impact</h3>
-      <p class="body-text">By providing robust static analysis tools that do not rely on billing accounts or external API quotas, PhishGuard democratizes threat intelligence. It gives developers, remote teams, and security engineers access to a high-end inspection utility without introducing third-party risk or financial overhead.</p>
-    </div>
-  </div>
-</div><!-- /page-about -->
-
-<!-- FOOTER -->
-<footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-brand">PHISHGUARD <span class="accent">SECURE</span></div>
-    <div class="footer-links">
-      <button class="link-btn" onclick="showPage('scanner')">Message Inspect</button>·
-      <button class="link-btn" onclick="showPage('url')">Domain Inspect</button>·
-      <button class="link-btn" onclick="showPage('dashboard')">Analytics</button>·
-      <button class="link-btn" onclick="showPage('about')">Specifications</button>
-    </div>
-    <p class="footer-note">© 2026 PhishGuard. Audited client-side local software. No telemetry collected.</p>
-  </div>
-</footer>
-
-<div id="toast" class="toast hidden">Report copied to clipboard.</div>
 <script src="script.js"></script>
 </body>
 </html>
