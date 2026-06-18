@@ -59,24 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const severityBadge    = document.getElementById('severityBadge');
   const breakdownPanel   = document.getElementById('breakdownPanel');
   const aiAnalysisText   = document.getElementById('aiAnalysisText');
-  const aiSpinner        = document.getElementById('aiSpinner');
   const domainAuditList  = document.getElementById('domainAuditList');
   const highlightText    = document.getElementById('highlightText');
   const historySection   = document.getElementById('historySection');
   const historyTableBody = document.getElementById('historyTableBody');
   const exportLogsBtn    = document.getElementById('exportLogsBtn');
   const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
-  const apiKeyInput      = document.getElementById('apiKeyInput');
   const brandInfoBtn     = document.getElementById('brandInfoBtn');
   const brandListCard    = document.getElementById('brandListCard');
-
-  // Load API Key from LocalStorage
-  if (apiKeyInput) {
-    apiKeyInput.value = localStorage.getItem('anthropic_api_key') || '';
-    apiKeyInput.addEventListener('input', () => {
-      localStorage.setItem('anthropic_api_key', apiKeyInput.value.trim());
-    });
-  }
 
   // Toggle brand list tooltip/card
   if (brandInfoBtn && brandListCard) {
@@ -115,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Scan handler
   if (scanDetect) {
-    scanDetect.addEventListener('click', async () => {
+    scanDetect.addEventListener('click', () => {
       const textVal = scanInput.value.trim();
       const urlVal = urlInput.value.trim();
 
@@ -132,10 +122,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const analysisResult = analyze(textVal);
       const urlResult = urlVal ? analyzeUrl(urlVal) : null;
 
-      // Handle combined metrics if URL exists, weight it slightly or list it
+      // Handle combined metrics if URL exists
       let finalScore = analysisResult.score;
       if (urlResult) {
-        // Average or maximum index representation depending on layout priority
         finalScore = Math.max(analysisResult.score, urlResult.score);
       }
 
@@ -182,20 +171,23 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         `).join('');
       } else if (urlVal) {
-        domainAuditList.innerHTML = `<div class="body-text" style="color: var(--text-light)">No checks performed. Invalid URL prefix.</div>`;
+        domainAuditList.innerHTML = `<div class="domain-result-row"><span class="domain-check-label">Format Check</span><span class="domain-check-status status-bad">Invalid Hostname URL</span></div>`;
       } else {
         domainAuditList.innerHTML = `<div class="body-text" style="color: var(--text-light)">Submit a domain/URL to inspect.</div>`;
       }
 
-      // Display the Results Card
+      // Generate local security summary
+      aiAnalysisText.textContent = generateLocalSummary(finalScore, severity.label.toLowerCase(), triggeredCats);
+
+      // Display the Results Card with Animation
+      scanResult.classList.remove('results-animation');
+      void scanResult.offsetWidth; // Trigger reflow to restart CSS animation
+      scanResult.classList.add('results-animation');
       scanResult.style.display = 'block';
 
       // Save to logs history list
       saveHistory(textVal, finalScore, severity.label);
       renderHistoryTable();
-
-      // Trigger AI Analysis
-      await getAIAnalysis(finalScore, triggeredCats);
     });
   }
 
@@ -325,67 +317,37 @@ function analyzeUrl(raw) {
   return { score, checks };
 }
 
-// ─── AI ANALYSIS ──────────────────────────────────────────────
-async function getAIAnalysis(score, triggeredCats) {
-  const aiTextEl = document.getElementById('aiAnalysisText');
-  const aiSpinner = document.getElementById('aiSpinner');
-
+// ─── LOCAL SECURITY SUMMARY GENERATOR ─────────────────────────
+function generateLocalSummary(score, level, triggeredCats) {
   if (score <= 30) {
-    aiTextEl.textContent = 'No threats detected — AI analysis not required.';
-    aiSpinner.style.display = 'none';
-    return;
+    return 'No threats detected — AI analysis not required.';
   }
 
-  const apiKey = localStorage.getItem('anthropic_api_key') || '';
-  if (!apiKey) {
-    aiTextEl.textContent = 'Configure your Anthropic API Key in the settings at the top to load AI analysis.';
-    aiSpinner.style.display = 'none';
-    return;
+  const catNames = triggeredCats.map(c => c.name);
+  const phrases = triggeredCats.flatMap(c => c.matchedExamples);
+
+  let sentence1 = "";
+  let sentence2 = "";
+
+  if (level.includes('critical')) {
+    sentence1 = `This text block represents a highly dangerous, critical-severity credential harvesting or corporate spoofing campaign.`;
+  } else if (level.includes('likely')) {
+    sentence1 = `This communication indicates a targeted social engineering or financial bait scheme designed to elicit immediate action.`;
+  } else {
+    sentence1 = `This payload contains mild suspicious markers, primarily triggering warning indicators around urgency and external redirects.`;
   }
 
-  aiSpinner.style.display = 'inline-block';
-  aiTextEl.textContent = 'Retrieving threat context summary...';
-
-  const catNames = triggeredCats.map(c => c.name).join(', ');
-  const phrases = triggeredCats.flatMap(c => c.matchedExamples).map(p => `"${p}"`).join(', ');
-
-  const promptText = `You are a cybersecurity analyst. A phishing detection scan returned the following results: Threat Index: ${score}/100. Categories triggered: ${catNames || 'None'}. Matched phrases: ${phrases || 'None'}. Summarize in 2 sentences what kind of phishing attempt this likely is and who the likely target is.`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 150,
-        messages: [
-          {
-            role: 'user',
-            content: promptText
-          }
-        ]
-      })
-    });
-
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.error?.message || `HTTP ${res.status}`);
-    }
-
-    const data = await res.json();
-    const summary = data.content?.[0]?.text || 'No summary returned.';
-    aiTextEl.textContent = summary;
-  } catch (err) {
-    console.error(err);
-    aiTextEl.innerHTML = `<span style="color: var(--sev-crit-text)">Error pulling AI explanation: ${err.message}</span>`;
-  } finally {
-    aiSpinner.style.display = 'none';
+  if (triggeredCats.some(c => c.id === 'cred' || c.id === 'sensitive')) {
+    sentence2 = `It targets identity files and security details using phrase highlights like ${phrases.slice(0, 2).map(p => `"${p}"`).join(' and ')}.`;
+  } else if (triggeredCats.some(c => c.id === 'urgency')) {
+    sentence2 = `It attempts to induce stress and bypass rational checks by enforcing strict execution constraints.`;
+  } else if (triggeredCats.some(c => c.id === 'finance')) {
+    sentence2 = `It lures the user with promise triggers of payments or compensation credits.`;
+  } else {
+    sentence2 = `Security teams suggest confirming the authenticity of the sender channel before clicking embedded hostlinks.`;
   }
+
+  return `${sentence1} ${sentence2}`;
 }
 
 // ─── LOGGING & HISTORY ─────────────────────────────────────────

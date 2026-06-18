@@ -60,14 +60,19 @@ The domain inspector parses URL inputs into component segments and tests them ag
 *   **Brand Checksums:** Analyzes hostnames for brand spoofing (e.g., checking if a domain contains the word `paypal` but does not resolve to `paypal.com` or `paypal.net`).
 *   **Lexical Integrity:** Flags domains with high hyphen counts (`-`) and phishing parameters in queries (e.g., containing key-value pairs like `verify`, `token`, `login`).
 
----
-
 ## How to Run Locally (Zero Setup)
 
 1. Open `index.html` directly in a browser (double-click the file or run `start index.html` from PowerShell).
-2. Paste a sample message into the textarea on the **Message Inspect** page and click **Scan Payload**.
-3. Go to the **Domain Inspect** page to check URLs for redirect masking and brand spoofing.
-4. View metrics and historical logs under the **Analytics** tab.
+2. Paste a sample message into the text area under **Target Message / Email Copy**.
+3. (Optional) Provide a destination URL or domain in the **Domain / Link** input field.
+4. Click **Scan Payload** to run the local threat analysis engine.
+5. Review the results instantly:
+   - **Composite Threat Index & Severity Badge**: Displays the final score and classification (Safe, Suspicious, Likely Phishing, or Critical).
+   - **Threat Breakdown**: Highlights which signature categories matched, showing match weights and example hits.
+   - **AI Analysis**: Renders a local, human-readable natural language security summary.
+   - **Domain Integrity Audit**: Shows detailed checks (Transport Layer, Redirect Masking, TLD Evaluation, Brand Checksum, Lexical Integrity, and Query Parameters) for the analyzed URL.
+   - **Payload Highlight View**: Displays the submitted text with interactive, color-coded overlays corresponding to the threat categories.
+   - **Scan History Logs**: View past scans in a collapsible, interactive log table with a one-click **Export Logs as JSON** feature.
 
 ## Free Deployment Options
 
@@ -79,4 +84,4 @@ The domain inspector parses URL inputs into component segments and tests them ag
 | **Cloudflare Pages** | Link your GitHub repository and build static files. | Free |
 
 ---
-*Built for Hackverse X – showcasing a functional, elegant security UI with zero-cost backend dependency.*
+*Built for Hackverse – showcasing a functional, elegant security UI with zero-cost backend dependency.*

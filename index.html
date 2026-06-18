@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PhishGuard Secure – Clean Minimal Threat Detection Console</title>
+  <title>PhishGuard Secure – Cyber Threat Detection Console</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
@@ -14,12 +14,6 @@
     <div>
       <h1>PhishGuard Secure</h1>
       <div class="subtitle">Local-first explainable threat intelligence sandbox.</div>
-    </div>
-    
-    <!-- Anthropic API Settings -->
-    <div class="api-settings">
-      <label for="apiKeyInput">Anthropic API Key:</label>
-      <input type="password" id="apiKeyInput" placeholder="sk-ant-..." autocomplete="off"/>
     </div>
   </header>
 
@@ -63,31 +57,31 @@
         <!-- Legend of colors -->
         <div class="color-legend">
           <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-urgency-bg); border: 1px solid var(--hl-urgency-text);"></span>
+            <span class="legend-dot" style="background-color: var(--hl-urgency-bg); border: 1px solid var(--hl-urgency-border);"></span>
             <span>Urgency</span>
           </div>
           <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-cred-bg); border: 1px solid var(--hl-cred-text);"></span>
+            <span class="legend-dot" style="background-color: var(--hl-cred-bg); border: 1px solid var(--hl-cred-border);"></span>
             <span>Harvesting</span>
           </div>
           <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-url-bg); border: 1px solid var(--hl-url-text);"></span>
+            <span class="legend-dot" style="background-color: var(--hl-url-bg); border: 1px solid var(--hl-url-border);"></span>
             <span>Untrusted Domain</span>
           </div>
           <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-finance-bg); border: 1px solid var(--hl-finance-text);"></span>
+            <span class="legend-dot" style="background-color: var(--hl-finance-bg); border: 1px solid var(--hl-finance-border);"></span>
             <span>Financial Bait</span>
           </div>
           <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-social-bg); border: 1px solid var(--hl-social-text);"></span>
+            <span class="legend-dot" style="background-color: var(--hl-social-bg); border: 1px solid var(--hl-social-border);"></span>
             <span>Social Engineering</span>
           </div>
           <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-imperson-bg); border: 1px solid var(--hl-imperson-text);"></span>
+            <span class="legend-dot" style="background-color: var(--hl-imperson-bg); border: 1px solid var(--hl-imperson-border);"></span>
             <span>Brand Impersonation</span>
           </div>
           <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-sensitive-bg); border: 1px solid var(--hl-sensitive-text);"></span>
+            <span class="legend-dot" style="background-color: var(--hl-sensitive-bg); border: 1px solid var(--hl-sensitive-border);"></span>
             <span>Sensitive Info</span>
           </div>
         </div>
@@ -118,7 +112,6 @@
         <div class="card">
           <div class="card-title">AI Analysis</div>
           <div class="ai-analysis-text">
-            <span id="aiSpinner" class="spinner" style="display: none;"></span>
             <span id="aiAnalysisText">AI analysis results will load here...</span>
           </div>
         </div>
