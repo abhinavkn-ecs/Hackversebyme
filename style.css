@@ -60,6 +60,84 @@
   --hl-sensitive-border: rgba(236, 72, 153, 0.3);
 }
 
+body.light-theme {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-alt: #f1f5f9;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-light: #94a3b8;
+  --border: rgba(15, 23, 42, 0.08);
+  --border-focus: #3b82f6;
+  --glow-color: rgba(59, 130, 246, 0.08);
+
+  /* Light mode adjustments for Highlight Category styles to keep contrast readable */
+  --hl-urgency-bg: rgba(234, 179, 8, 0.12);
+  --hl-urgency-text: #854d0e;
+  --hl-urgency-border: rgba(234, 179, 8, 0.25);
+
+  --hl-cred-bg: rgba(239, 68, 68, 0.1);
+  --hl-cred-text: #991b1b;
+  --hl-cred-border: rgba(239, 68, 68, 0.25);
+
+  --hl-url-bg: rgba(59, 130, 246, 0.1);
+  --hl-url-text: #1e40af;
+  --hl-url-border: rgba(59, 130, 246, 0.25);
+
+  --hl-finance-bg: rgba(16, 185, 129, 0.1);
+  --hl-finance-text: #065f46;
+  --hl-finance-border: rgba(16, 185, 129, 0.25);
+
+  --hl-social-bg: rgba(168, 85, 247, 0.1);
+  --hl-social-text: #6b21a8;
+  --hl-social-border: rgba(168, 85, 247, 0.25);
+
+  --hl-imperson-bg: rgba(249, 115, 22, 0.1);
+  --hl-imperson-text: #9a3412;
+  --hl-imperson-border: rgba(249, 115, 22, 0.25);
+
+  --hl-sensitive-bg: rgba(236, 72, 153, 0.1);
+  --hl-sensitive-text: #9d174d;
+  --hl-sensitive-border: rgba(236, 72, 153, 0.25);
+}
+
+/* Theme Toggle Button Styles */
+.theme-toggle-btn {
+  background-color: var(--surface-alt);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 1.15rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--border);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+body.light-theme .theme-toggle-btn:hover {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.theme-toggle-btn:active {
+  transform: translateY(0);
+}
+
+body.light-theme .theme-icon-light { display: none; }
+body.light-theme .theme-icon-dark { display: block; }
+body:not(.light-theme) .theme-icon-light { display: block; }
+body:not(.light-theme) .theme-icon-dark { display: none; }
+
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;

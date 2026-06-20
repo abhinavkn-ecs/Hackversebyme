@@ -67,6 +67,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
   const brandInfoBtn     = document.getElementById('brandInfoBtn');
   const brandListCard    = document.getElementById('brandListCard');
+  const themeToggleBtn   = document.getElementById('themeToggleBtn');
+
+  // Initialize theme from localStorage
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+  }
+
+  // Theme toggle listener
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      const isLight = document.body.classList.contains('light-theme');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+  }
 
   // Toggle brand list tooltip/card
   if (brandInfoBtn && brandListCard) {
