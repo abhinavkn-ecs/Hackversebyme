@@ -107,6 +107,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Preset templates listener
+  const PRESETS = {
+    'phish-bank': {
+      text: 'URGENT SECURITY ALERT: We detected unauthorized login attempts to your Chase Bank account from IP: 192.168.1.109. Please verify your account credentials immediately by clicking the secure login link. Failure to respond within 24 hours will result in permanent suspension of your banking profile.',
+      url: 'chase-security-verify.xyz'
+    },
+    'phish-urgency': {
+      text: 'Dear customer, your Microsoft email account password expires today. Reset your password now to avoid service interruption and losing your mailbox files. Enter your password on our secure-portal verification page immediately.',
+      url: 'http://microsoft-secure-account.xyz/verify'
+    },
+    'safe-work': {
+      text: 'Hi Team, just a reminder that our weekly progress meeting is scheduled for tomorrow morning at 10 AM. We will review the Q2 roadmap updates and discuss the deployment steps. Let me know if you have any questions or items to add to the agenda.',
+      url: 'https://company.internal/wiki'
+    }
+  };
+
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const type = btn.getAttribute('data-preset');
+      const data = PRESETS[type];
+      if (data) {
+        scanInput.value = data.text;
+        urlInput.value = data.url;
+        // Automatically trigger scan for user convenience
+        const detectBtn = document.getElementById('scanDetectBtn');
+        if (detectBtn) detectBtn.click();
+      }
+    });
+  });
+
   // Clear inputs and state listener
   if (scanClear) {
     scanClear.addEventListener('click', () => {

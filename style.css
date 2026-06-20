@@ -745,3 +745,40 @@ tr:last-child td {
   from { opacity: 0.6; }
   to { opacity: 1; }
 }
+
+/* Preset Templates Styling */
+.preset-templates-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.preset-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.preset-btn {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.preset-btn:hover {
+  background: var(--border);
+  border-color: var(--border-focus);
+}
+
+.preset-btn:active {
+  transform: translateY(1px);
+}
+
