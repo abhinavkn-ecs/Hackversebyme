@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const scanResult       = document.getElementById('scanResult');
   const scoreNum         = document.getElementById('scoreNum');
   const severityBadge    = document.getElementById('severityBadge');
+  const scoreGaugeFill   = document.getElementById('scoreGaugeFill');
   const breakdownPanel   = document.getElementById('breakdownPanel');
   const aiAnalysisText   = document.getElementById('aiAnalysisText');
   const domainAuditList  = document.getElementById('domainAuditList');
@@ -146,6 +147,11 @@ document.addEventListener('DOMContentLoaded', () => {
       safeMessageBanner.style.display = 'none';
       scanResult.style.display = 'none';
       highlightText.innerHTML = 'Scan output highlights will appear here...';
+      if (scoreGaugeFill) {
+        scoreGaugeFill.style.strokeDashoffset = 251.327;
+        scoreGaugeFill.style.stroke = 'var(--sev-safe)';
+        scoreGaugeFill.style.filter = 'none';
+      }
     });
   }
 
@@ -181,6 +187,31 @@ document.addEventListener('DOMContentLoaded', () => {
       scoreNum.innerHTML = `${finalScore}<span>/100</span>`;
       severityBadge.textContent = severity.label;
       severityBadge.className = `severity-badge ${severity.cls}`;
+
+      // Update SVG gauge fill and color
+      if (scoreGaugeFill) {
+        const radius = 40;
+        const circumference = 2 * Math.PI * radius; // 251.327
+        const offset = circumference - (finalScore / 100) * circumference;
+        scoreGaugeFill.style.strokeDashoffset = offset;
+
+        // Change stroke color dynamically based on severity
+        let strokeColor = 'var(--sev-safe)';
+        let glowColor = 'rgba(16, 185, 129, 0.3)';
+        if (finalScore > 30 && finalScore <= 60) {
+          strokeColor = 'var(--sev-susp)';
+          glowColor = 'rgba(245, 158, 11, 0.3)';
+        } else if (finalScore > 60 && finalScore <= 85) {
+          strokeColor = 'var(--sev-likely)';
+          glowColor = 'rgba(249, 115, 22, 0.3)';
+        } else if (finalScore > 85) {
+          strokeColor = 'var(--sev-crit)';
+          glowColor = 'rgba(236, 72, 153, 0.4)';
+        }
+        scoreGaugeFill.style.stroke = strokeColor;
+        scoreGaugeFill.style.setProperty('--gauge-glow', glowColor);
+        scoreGaugeFill.style.filter = `drop-shadow(0 0 6px ${glowColor})`;
+      }
 
       // Render Safe Banner if score < 30
       if (finalScore < 30) {

@@ -104,9 +104,15 @@
         <!-- Score Card -->
         <div class="card">
           <div class="card-title">Composite Threat Index</div>
-          <div class="score-badge-container">
-            <div class="score-display" id="scoreNum">0<span>/100</span></div>
-            <span id="severityBadge" class="severity-badge">Safe</span>
+          <div class="score-gauge-wrapper">
+            <svg class="score-gauge" viewBox="0 0 100 100">
+              <circle class="score-gauge-bg" cx="50" cy="50" r="40"></circle>
+              <circle class="score-gauge-fill" id="scoreGaugeFill" cx="50" cy="50" r="40"></circle>
+            </svg>
+            <div class="score-gauge-content">
+              <div class="score-display" id="scoreNum">0<span>/100</span></div>
+              <span id="severityBadge" class="severity-badge">Safe</span>
+            </div>
           </div>
         </div>
 
