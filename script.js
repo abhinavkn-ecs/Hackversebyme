@@ -20,63 +20,56 @@ const CATS = [
 
 // EXTENSIBLE BRAND SPOOF LIST: Add brand names here in lowercase to check for domain spoofing.
 const BRAND_SPOOF_LIST = [
-  'paypal',
-  'google',
-  'apple',
-  'microsoft',
-  'amazon',
-  'netflix',
-  'facebook',
-  'instagram',
-  'whatsapp',
-  'chase',
-  'wellsfargo',
-  'citibank',
-  'bankofamerica',
-  'fedex',
-  'ups',
-  'dhl',
-  'usps',
-  'docusign',
-  'dropbox',
-  'zoom',
-  'bank'
+  'paypal','google','apple','microsoft','amazon','netflix',
+  'facebook','instagram','whatsapp','chase','wellsfargo',
+  'citibank','bankofamerica','fedex','ups','dhl','usps',
+  'docusign','dropbox','zoom','bank'
 ];
 
+// Recognised legitimate TLDs per brand (used in domain spoofing check)
+const LEGIT_TLDS = ['.com', '.net', '.org', '.edu', '.gov'];
+
 // ─── STATE ───────────────────────────────────────────────────
-let history = JSON.parse(localStorage.getItem('pg_h') || '[]');
+let history = [];
+try {
+  history = JSON.parse(localStorage.getItem('pg_h') || '[]');
+  if (!Array.isArray(history)) history = [];
+} catch {
+  history = [];
+}
 
-// ─── DOM ELEMENTS ─────────────────────────────────────────────
+// ─── DOM READY ───────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  const scanInput        = document.getElementById('scanInput');
-  const urlInput         = document.getElementById('urlInput');
-  const scanDetect       = document.getElementById('scanDetectBtn');
-  const scanClear        = document.getElementById('scanClearBtn');
-  const validationError  = document.getElementById('validationError');
-  const safeMessageBanner= document.getElementById('safeMessageBanner');
-  const scanResult       = document.getElementById('scanResult');
-  const scoreNum         = document.getElementById('scoreNum');
-  const severityBadge    = document.getElementById('severityBadge');
-  const scoreGaugeFill   = document.getElementById('scoreGaugeFill');
-  const breakdownPanel   = document.getElementById('breakdownPanel');
-  const aiAnalysisText   = document.getElementById('aiAnalysisText');
-  const domainAuditList  = document.getElementById('domainAuditList');
-  const highlightText    = document.getElementById('highlightText');
-  const historySection   = document.getElementById('historySection');
-  const historyTableBody = document.getElementById('historyTableBody');
-  const exportLogsBtn    = document.getElementById('exportLogsBtn');
-  const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
-  const brandInfoBtn     = document.getElementById('brandInfoBtn');
-  const brandListCard    = document.getElementById('brandListCard');
-  const themeToggleBtn   = document.getElementById('themeToggleBtn');
+  // Cache DOM references once
+  const $ = (id) => document.getElementById(id);
+  const scanInput        = $('scanInput');
+  const urlInput         = $('urlInput');
+  const scanDetect       = $('scanDetectBtn');
+  const scanClear        = $('scanClearBtn');
+  const validationError  = $('validationError');
+  const safeMessageBanner= $('safeMessageBanner');
+  const scanResult       = $('scanResult');
+  const scoreNum         = $('scoreNum');
+  const severityBadge    = $('severityBadge');
+  const scoreGaugeFill   = $('scoreGaugeFill');
+  const breakdownPanel   = $('breakdownPanel');
+  const aiAnalysisText   = $('aiAnalysisText');
+  const domainAuditList  = $('domainAuditList');
+  const highlightText    = $('highlightText');
+  const historySection   = $('historySection');
+  const historyTableBody = $('historyTableBody');
+  const exportLogsBtn    = $('exportLogsBtn');
+  const toggleHistoryBtn = $('toggleHistoryBtn');
+  const brandInfoBtn     = $('brandInfoBtn');
+  const brandListCard    = $('brandListCard');
+  const themeToggleBtn   = $('themeToggleBtn');
 
-  // Initialize theme from localStorage
+  // ─── THEME ─────────────────────────────────────────────────
   const savedTheme = localStorage.getItem('theme') || 'dark';
   if (savedTheme === 'light') {
     document.body.classList.add('light-theme');
   }
 
-  // Theme toggle listener
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', () => {
       document.body.classList.toggle('light-theme');
@@ -85,30 +78,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Toggle brand list tooltip/card
+  // ─── BRAND LIST TOGGLE ─────────────────────────────────────
   if (brandInfoBtn && brandListCard) {
     brandInfoBtn.addEventListener('click', (e) => {
       e.preventDefault();
       const isHidden = brandListCard.style.display === 'none' || brandListCard.style.display === '';
       brandListCard.style.display = isHidden ? 'block' : 'none';
+      brandInfoBtn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
     });
   }
 
-  // Toggle collapsible logs
+  // ─── HISTORY COLLAPSE ──────────────────────────────────────
   if (toggleHistoryBtn && historySection) {
-    toggleHistoryBtn.addEventListener('click', () => {
+    const toggleCollapse = () => {
       historySection.classList.toggle('collapsed');
+      const expanded = !historySection.classList.contains('collapsed');
+      toggleHistoryBtn.setAttribute('aria-expanded', String(expanded));
+    };
+    toggleHistoryBtn.addEventListener('click', toggleCollapse);
+    toggleHistoryBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleCollapse();
+      }
     });
   }
 
-  // Export logs listener
+  // ─── EXPORT LOGS ───────────────────────────────────────────
   if (exportLogsBtn) {
-    exportLogsBtn.addEventListener('click', () => {
+    exportLogsBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // prevent history toggle
       exportLogs();
     });
   }
 
-  // Preset templates listener
+  // ─── PRESET TEMPLATES ──────────────────────────────────────
   const PRESETS = {
     'phish-bank': {
       text: 'URGENT SECURITY ALERT: We detected unauthorized login attempts to your Chase Bank account from IP: 192.168.1.109. Please verify your account credentials immediately by clicking the secure login link. Failure to respond within 24 hours will result in permanent suspension of your banking profile.',
@@ -126,19 +130,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.preset-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const type = btn.getAttribute('data-preset');
-      const data = PRESETS[type];
+      const data = PRESETS[btn.dataset.preset];
       if (data) {
         scanInput.value = data.text;
         urlInput.value = data.url;
-        // Automatically trigger scan for user convenience
-        const detectBtn = document.getElementById('scanDetectBtn');
-        if (detectBtn) detectBtn.click();
+        scanDetect.click();
       }
     });
   });
 
-  // Clear inputs and state listener
+  // ─── CLEAR / RESET ────────────────────────────────────────
   if (scanClear) {
     scanClear.addEventListener('click', () => {
       scanInput.value = '';
@@ -146,22 +147,18 @@ document.addEventListener('DOMContentLoaded', () => {
       validationError.style.display = 'none';
       safeMessageBanner.style.display = 'none';
       scanResult.style.display = 'none';
-      highlightText.innerHTML = 'Scan output highlights will appear here...';
-      if (scoreGaugeFill) {
-        scoreGaugeFill.style.strokeDashoffset = 251.327;
-        scoreGaugeFill.style.stroke = 'var(--sev-safe)';
-        scoreGaugeFill.style.filter = 'none';
-      }
+      highlightText.textContent = 'Scan output highlights will appear here\u2026';
+      resetGauge(scoreGaugeFill);
     });
   }
 
-  // Scan handler
+  // ─── MAIN SCAN HANDLER ────────────────────────────────────
   if (scanDetect) {
     scanDetect.addEventListener('click', () => {
       const textVal = scanInput.value.trim();
       const urlVal = urlInput.value.trim();
 
-      // Check empty validation
+      // Validate
       if (!textVal) {
         validationError.style.display = 'block';
         return;
@@ -170,109 +167,55 @@ document.addEventListener('DOMContentLoaded', () => {
       safeMessageBanner.style.display = 'none';
       scanResult.style.display = 'none';
 
-      // Perform analysis
+      // Analyze
       const analysisResult = analyze(textVal);
       const urlResult = urlVal ? analyzeUrl(urlVal) : null;
-
-      // Handle combined metrics if URL exists
-      let finalScore = analysisResult.score;
-      if (urlResult) {
-        finalScore = Math.max(analysisResult.score, urlResult.score);
-      }
-
-      // Determine severity
+      const finalScore = urlResult
+        ? Math.max(analysisResult.score, urlResult.score)
+        : analysisResult.score;
       const severity = getSeverity(finalScore);
 
-      // Render Score & Badge
-      scoreNum.innerHTML = `${finalScore}<span>/100</span>`;
+      // Render score with count-up animation
+      animateScore(scoreNum, finalScore);
       severityBadge.textContent = severity.label;
       severityBadge.className = `severity-badge ${severity.cls}`;
 
-      // Update SVG gauge fill and color
-      if (scoreGaugeFill) {
-        const radius = 40;
-        const circumference = 2 * Math.PI * radius; // 251.327
-        const offset = circumference - (finalScore / 100) * circumference;
-        scoreGaugeFill.style.strokeDashoffset = offset;
+      // Update SVG gauge
+      updateGauge(scoreGaugeFill, finalScore);
 
-        // Change stroke color dynamically based on severity
-        let strokeColor = 'var(--sev-safe)';
-        let glowColor = 'rgba(16, 185, 129, 0.3)';
-        if (finalScore > 30 && finalScore <= 60) {
-          strokeColor = 'var(--sev-susp)';
-          glowColor = 'rgba(245, 158, 11, 0.3)';
-        } else if (finalScore > 60 && finalScore <= 85) {
-          strokeColor = 'var(--sev-likely)';
-          glowColor = 'rgba(249, 115, 22, 0.3)';
-        } else if (finalScore > 85) {
-          strokeColor = 'var(--sev-crit)';
-          glowColor = 'rgba(236, 72, 153, 0.4)';
-        }
-        scoreGaugeFill.style.stroke = strokeColor;
-        scoreGaugeFill.style.setProperty('--gauge-glow', glowColor);
-        scoreGaugeFill.style.filter = `drop-shadow(0 0 6px ${glowColor})`;
-      }
+      // Safe banner
+      safeMessageBanner.style.display = finalScore < 30 ? 'flex' : 'none';
 
-      // Render Safe Banner if score < 30
-      if (finalScore < 30) {
-        safeMessageBanner.style.display = 'flex';
-      } else {
-        safeMessageBanner.style.display = 'none';
-      }
-
-      // Render Threat Breakdown panel
+      // Threat breakdown
       const triggeredCats = analysisResult.cats.filter(c => c.hits > 0);
-      if (triggeredCats.length > 0) {
-        breakdownPanel.innerHTML = triggeredCats.map(c => `
-          <div class="explain-item">
-            <div class="explain-header">
-              <span class="explain-cat-name">${c.name}</span>
-              <span class="explain-meta">${c.hits} hit${c.hits > 1 ? 's' : ''} &middot; Weight: ${c.w}</span>
-            </div>
-            <div class="explain-examples">Matched: "${c.matchedExamples.join('", "')}"</div>
-          </div>
-        `).join('');
-      } else {
-        breakdownPanel.innerHTML = `<div class="body-text" style="color: var(--text-light)">No threat signatures matching standard categories were detected.</div>`;
-      }
+      renderBreakdown(breakdownPanel, triggeredCats);
 
-      // Render Highlights
+      // Highlights
       highlightText.innerHTML = buildHighlight(textVal, analysisResult.words);
 
-      // Render Domain Audit Log
-      if (urlResult) {
-        domainAuditList.innerHTML = urlResult.checks.map(c => `
-          <div class="domain-result-row">
-            <span class="domain-check-label">${c.label}</span>
-            <span class="domain-check-status status-${c.ok}">${c.text}</span>
-          </div>
-        `).join('');
-      } else if (urlVal) {
-        domainAuditList.innerHTML = `<div class="domain-result-row"><span class="domain-check-label">Format Check</span><span class="domain-check-status status-bad">Invalid Hostname URL</span></div>`;
-      } else {
-        domainAuditList.innerHTML = `<div class="body-text" style="color: var(--text-light)">Submit a domain/URL to inspect.</div>`;
-      }
+      // Domain audit
+      renderDomainAudit(domainAuditList, urlResult, urlVal);
 
-      // Generate local security summary
+      // AI summary
       aiAnalysisText.textContent = generateLocalSummary(finalScore, severity.label.toLowerCase(), triggeredCats);
 
-      // Display the Results Card with Animation
+      // Show results with animation
       scanResult.classList.remove('results-animation');
-      void scanResult.offsetWidth; // Trigger reflow to restart CSS animation
+      void scanResult.offsetWidth; // reflow to restart animation
       scanResult.classList.add('results-animation');
       scanResult.style.display = 'block';
 
-      // Save to logs history list
+      // Log and update history
       saveHistory(textVal, finalScore, severity.label);
-      renderHistoryTable();
+      renderHistoryTable(historyTableBody);
     });
   }
 
-  // Render history table on load
-  renderHistoryTable();
+  // Initial history render
+  renderHistoryTable(historyTableBody);
 });
 
-// ─── INTERNALS ────────────────────────────────────────────────
+// ─── SEVERITY CLASSIFIER ──────────────────────────────────────
 function getSeverity(score) {
   if (score <= 30) return { label: 'Safe', cls: 'badge-safe' };
   if (score <= 60) return { label: 'Suspicious', cls: 'badge-suspicious' };
@@ -280,22 +223,23 @@ function getSeverity(score) {
   return { label: 'Critical', cls: 'badge-critical' };
 }
 
+// ─── TEXT ANALYSIS ENGINE ─────────────────────────────────────
 function analyze(text) {
   const lo = text.toLowerCase();
   const words = {};
   const cats = CATS.map(cat => {
     let hits = 0;
     const matchedExamples = [];
-    cat.kw.forEach(kw => {
+    for (const kw of cat.kw) {
       if (lo.includes(kw)) {
         hits++;
         if (!words[kw]) words[kw] = cat.cls;
-        if (matchedExamples.length < 2) {
-          matchedExamples.push(kw);
-        }
+        if (matchedExamples.length < 3) matchedExamples.push(kw);
       }
-    });
-    const catScore = Math.min(100, Math.round((hits / Math.max(cat.kw.length * 0.22, 1)) * 100));
+    }
+    // Normalize: scale so 2-3 hits in a category already produce a meaningful score
+    const threshold = Math.max(cat.kw.length * 0.2, 1);
+    const catScore = Math.min(100, Math.round((hits / threshold) * 100));
     return { ...cat, hits, catScore, matchedExamples };
   });
 
@@ -306,21 +250,32 @@ function analyze(text) {
   return { score, cats, words };
 }
 
+// ─── HIGHLIGHT BUILDER ────────────────────────────────────────
 function buildHighlight(text, words) {
-  if (!Object.keys(words).length) {
-    return escHTML(text) || 'No text submitted.';
-  }
-  const sorted = Object.keys(words).sort((a, b) => b.length - a.length);
+  const keys = Object.keys(words);
+  if (!keys.length) return escHTML(text) || 'No text submitted.';
+
+  // Sort by length descending to prevent partial overlap matches
+  const sorted = keys.sort((a, b) => b.length - a.length);
   const re = new RegExp('(' + sorted.map(escRE).join('|') + ')', 'gi');
-  return escHTML(text).replace(re, m => `<mark class="${words[m.toLowerCase()] || 'm-social'}">${m}</mark>`);
+
+  // We must apply escHTML per-segment to avoid breaking HTML entities in matches
+  const parts = text.split(re);
+  return parts.map(part => {
+    const cls = words[part.toLowerCase()];
+    return cls
+      ? `<mark class="${cls}">${escHTML(part)}</mark>`
+      : escHTML(part);
+  }).join('');
 }
 
+// ─── DOMAIN / URL ANALYSIS ────────────────────────────────────
 function analyzeUrl(raw) {
   let score = 0;
   const checks = [];
 
-  const hasHTTPS = raw.startsWith('https://') || raw.startsWith('http://');
-  const cleanUrl = hasHTTPS ? raw : 'http://' + raw;
+  const hasScheme = /^https?:\/\//i.test(raw);
+  const cleanUrl = hasScheme ? raw : 'http://' + raw;
   const isSecure = cleanUrl.startsWith('https://');
 
   checks.push({
@@ -339,8 +294,8 @@ function analyzeUrl(raw) {
   });
   if (isShort) score += 20;
 
-  const suspTLD = ['.xyz', '.tk', '.ml', '.cf', '.ga', '.gq'];
-  const hasSuspTLD = suspTLD.some(t => cleanUrl.toLowerCase().includes(t));
+  const suspTLDs = ['.xyz', '.tk', '.ml', '.cf', '.ga', '.gq'];
+  const hasSuspTLD = suspTLDs.some(t => cleanUrl.toLowerCase().includes(t));
   checks.push({
     label: 'TLD Evaluation',
     ok: hasSuspTLD ? 'bad' : 'ok',
@@ -352,17 +307,13 @@ function analyzeUrl(raw) {
   let domainPart = '';
   try {
     domainPart = new URL(cleanUrl).hostname.toLowerCase();
-  } catch (e) {
+  } catch {
     domainPart = cleanUrl.replace(/https?:\/\//, '').split('/')[0].toLowerCase();
   }
 
-  const hasBrandSpoof = BRAND_SPOOF_LIST.some(b => 
-    domainPart.includes(b) && 
-    !domainPart.endsWith(b + '.com') && 
-    !domainPart.endsWith(b + '.net') && 
-    !domainPart.endsWith(b + '.org') &&
-    !domainPart.endsWith(b + '.edu') &&
-    !domainPart.endsWith(b + '.gov')
+  const hasBrandSpoof = BRAND_SPOOF_LIST.some(b =>
+    domainPart.includes(b) &&
+    !LEGIT_TLDS.some(tld => domainPart.endsWith(b + tld))
   );
   checks.push({
     label: 'Brand Checksum',
@@ -371,57 +322,137 @@ function analyzeUrl(raw) {
   });
   if (hasBrandSpoof) score += 35;
 
-  const hasDash = (domainPart.match(/-/g) || []).length > 1;
+  const hyphenCount = (domainPart.match(/-/g) || []).length;
+  const hasDash = hyphenCount > 1;
   checks.push({
     label: 'Lexical Integrity',
     ok: hasDash ? 'warn' : 'ok',
-    text: hasDash ? 'High hyphens count' : 'Clean Lexical Structure'
+    text: hasDash ? `High hyphen count (${hyphenCount})` : 'Clean Lexical Structure'
   });
   if (hasDash) score += 10;
 
-  const suspParams = ['token', 'verify', 'account', 'password', 'login', 'redirect', 'confirm'].some(p => 
-    cleanUrl.toLowerCase().includes(p)
-  );
+  const suspParams = ['token', 'verify', 'account', 'password', 'login', 'redirect', 'confirm'];
+  const hasPhishParams = suspParams.some(p => cleanUrl.toLowerCase().includes(p));
   checks.push({
-    label: 'Queries Parameter',
-    ok: suspParams ? 'warn' : 'ok',
-    text: suspParams ? 'Phish query signatures' : 'Standard Queries'
+    label: 'Query Parameters',
+    ok: hasPhishParams ? 'warn' : 'ok',
+    text: hasPhishParams ? 'Phish query signatures' : 'Standard Queries'
   });
-  if (suspParams) score += 15;
+  if (hasPhishParams) score += 15;
 
-  score = Math.min(100, score);
-
-  return { score, checks };
+  return { score: Math.min(100, score), checks };
 }
 
-// ─── LOCAL SECURITY SUMMARY GENERATOR ─────────────────────────
+// ─── UI RENDER HELPERS ────────────────────────────────────────
+function renderBreakdown(panel, triggeredCats) {
+  if (triggeredCats.length > 0) {
+    panel.innerHTML = triggeredCats.map(c => `
+      <div class="explain-item">
+        <div class="explain-header">
+          <span class="explain-cat-name">${escHTML(c.name)}</span>
+          <span class="explain-meta">${c.hits} hit${c.hits > 1 ? 's' : ''} &middot; Weight: ${c.w}</span>
+        </div>
+        <div class="explain-examples">Matched: "${c.matchedExamples.map(escHTML).join('", "')}"</div>
+      </div>
+    `).join('');
+  } else {
+    panel.innerHTML = '<div style="color: var(--text-light)">No threat signatures matching standard categories were detected.</div>';
+  }
+}
+
+function renderDomainAudit(container, urlResult, urlVal) {
+  if (urlResult) {
+    container.innerHTML = urlResult.checks.map(c => `
+      <div class="domain-result-row">
+        <span class="domain-check-label">${escHTML(c.label)}</span>
+        <span class="domain-check-status status-${c.ok}">${escHTML(c.text)}</span>
+      </div>
+    `).join('');
+  } else if (urlVal) {
+    container.innerHTML = '<div class="domain-result-row"><span class="domain-check-label">Format Check</span><span class="domain-check-status status-bad">Invalid Hostname URL</span></div>';
+  } else {
+    container.innerHTML = '<div style="color: var(--text-light)">Submit a domain/URL to inspect.</div>';
+  }
+}
+
+// ─── GAUGE ANIMATION ──────────────────────────────────────────
+const GAUGE_CIRCUMFERENCE = 2 * Math.PI * 40; // r=40 → 251.327
+
+function updateGauge(el, score) {
+  if (!el) return;
+  const offset = GAUGE_CIRCUMFERENCE - (score / 100) * GAUGE_CIRCUMFERENCE;
+  el.style.strokeDashoffset = offset;
+
+  let strokeColor, glowColor;
+  if (score <= 30) {
+    strokeColor = 'var(--sev-safe)';
+    glowColor = 'rgba(16, 185, 129, 0.3)';
+  } else if (score <= 60) {
+    strokeColor = 'var(--sev-susp)';
+    glowColor = 'rgba(245, 158, 11, 0.3)';
+  } else if (score <= 85) {
+    strokeColor = 'var(--sev-likely)';
+    glowColor = 'rgba(249, 115, 22, 0.3)';
+  } else {
+    strokeColor = 'var(--sev-crit)';
+    glowColor = 'rgba(236, 72, 153, 0.4)';
+  }
+
+  el.style.stroke = strokeColor;
+  el.style.filter = `drop-shadow(0 0 6px ${glowColor})`;
+}
+
+function resetGauge(el) {
+  if (!el) return;
+  el.style.strokeDashoffset = GAUGE_CIRCUMFERENCE;
+  el.style.stroke = 'var(--sev-safe)';
+  el.style.filter = 'none';
+}
+
+// ─── SCORE COUNT-UP ANIMATION ─────────────────────────────────
+function animateScore(el, target) {
+  if (!el) return;
+  const duration = 600;
+  const start = performance.now();
+
+  function tick(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease-out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(eased * target);
+    el.innerHTML = `${current}<span>/100</span>`;
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// ─── LOCAL AI SUMMARY GENERATOR ───────────────────────────────
 function generateLocalSummary(score, level, triggeredCats) {
   if (score <= 30) {
     return 'No threats detected — AI analysis not required.';
   }
 
-  const catNames = triggeredCats.map(c => c.name);
   const phrases = triggeredCats.flatMap(c => c.matchedExamples);
-
-  let sentence1 = "";
-  let sentence2 = "";
+  let sentence1, sentence2;
 
   if (level.includes('critical')) {
-    sentence1 = `This text block represents a highly dangerous, critical-severity credential harvesting or corporate spoofing campaign.`;
+    sentence1 = 'This text block represents a highly dangerous, critical-severity credential harvesting or corporate spoofing campaign.';
   } else if (level.includes('likely')) {
-    sentence1 = `This communication indicates a targeted social engineering or financial bait scheme designed to elicit immediate action.`;
+    sentence1 = 'This communication indicates a targeted social engineering or financial bait scheme designed to elicit immediate action.';
   } else {
-    sentence1 = `This payload contains mild suspicious markers, primarily triggering warning indicators around urgency and external redirects.`;
+    sentence1 = 'This payload contains mild suspicious markers, primarily triggering warning indicators around urgency and external redirects.';
   }
 
   if (triggeredCats.some(c => c.id === 'cred' || c.id === 'sensitive')) {
-    sentence2 = `It targets identity files and security details using phrase highlights like ${phrases.slice(0, 2).map(p => `"${p}"`).join(' and ')}.`;
+    const examples = phrases.slice(0, 2).map(p => `"${p}"`).join(' and ');
+    sentence2 = `It targets identity files and security details using phrase highlights like ${examples}.`;
   } else if (triggeredCats.some(c => c.id === 'urgency')) {
-    sentence2 = `It attempts to induce stress and bypass rational checks by enforcing strict execution constraints.`;
+    sentence2 = 'It attempts to induce stress and bypass rational checks by enforcing strict execution constraints.';
   } else if (triggeredCats.some(c => c.id === 'finance')) {
-    sentence2 = `It lures the user with promise triggers of payments or compensation credits.`;
+    sentence2 = 'It lures the user with promise triggers of payments or compensation credits.';
   } else {
-    sentence2 = `Security teams suggest confirming the authenticity of the sender channel before clicking embedded hostlinks.`;
+    sentence2 = 'Security teams suggest confirming the authenticity of the sender channel before clicking embedded hostlinks.';
   }
 
   return `${sentence1} ${sentence2}`;
@@ -429,56 +460,66 @@ function generateLocalSummary(score, level, triggeredCats) {
 
 // ─── LOGGING & HISTORY ─────────────────────────────────────────
 function saveHistory(txt, score, severity) {
-  const preview = txt.replace(/\n/g, ' ').slice(0, 60) + (txt.length > 60 ? '...' : '');
+  const preview = txt.replace(/\n/g, ' ').slice(0, 60) + (txt.length > 60 ? '…' : '');
   const timestamp = new Date().toLocaleString([], { hour12: false });
   history.unshift({ timestamp, score, severity, preview });
-  if (history.length > 30) history.pop();
-  localStorage.setItem('pg_h', JSON.stringify(history));
+  if (history.length > 30) history.length = 30; // truncate efficiently
+  try {
+    localStorage.setItem('pg_h', JSON.stringify(history));
+  } catch {
+    // localStorage quota exceeded — silently degrade
+  }
 }
 
-function renderHistoryTable() {
-  const historyTableBody = document.getElementById('historyTableBody');
-  if (!historyTableBody) return;
+function renderHistoryTable(tbody) {
+  if (!tbody) return;
 
   if (history.length === 0) {
-    historyTableBody.innerHTML = `<tr><td colspan="4" class="empty-state">No execution records logged. Run a scan to populate.</td></tr>`;
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No execution records logged. Run a scan to populate.</td></tr>';
     return;
   }
 
-  historyTableBody.innerHTML = history.map(h => {
-    let badgeClass = 'badge-safe';
-    if (h.severity === 'Suspicious') badgeClass = 'badge-suspicious';
-    else if (h.severity === 'Likely Phishing') badgeClass = 'badge-likely';
-    else if (h.severity === 'Critical') badgeClass = 'badge-critical';
+  const badgeMap = {
+    'Safe': 'badge-safe',
+    'Suspicious': 'badge-suspicious',
+    'Likely Phishing': 'badge-likely',
+    'Critical': 'badge-critical'
+  };
 
+  tbody.innerHTML = history.map(h => {
+    const cls = badgeMap[h.severity] || 'badge-safe';
     return `
       <tr>
-        <td>${h.timestamp}</td>
+        <td>${escHTML(h.timestamp)}</td>
         <td>${h.score}</td>
-        <td><span class="severity-badge ${badgeClass}" style="padding: 0.15rem 0.4rem; font-size: 0.75rem;">${h.severity}</span></td>
-        <td style="font-family: monospace;">${escHTML(h.preview)}</td>
+        <td><span class="severity-badge ${cls}" style="padding:0.15rem 0.4rem;font-size:0.75rem">${escHTML(h.severity)}</span></td>
+        <td style="font-family:monospace">${escHTML(h.preview)}</td>
       </tr>
     `;
   }).join('');
 }
 
 function exportLogs() {
-  const logs = localStorage.getItem('pg_h') || '[]';
-  const blob = new Blob([JSON.stringify(JSON.parse(logs), null, 2)], { type: 'application/json' });
+  const raw = localStorage.getItem('pg_h') || '[]';
+  let formatted;
+  try {
+    formatted = JSON.stringify(JSON.parse(raw), null, 2);
+  } catch {
+    formatted = raw;
+  }
+  const blob = new Blob([formatted], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   a.href = url;
-  a.download = `phishguard-logs-${timestamp}.json`;
-  document.body.appendChild(a);
+  a.download = `phishguard-logs-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
   a.click();
-  document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
-// ─── UTILS ────────────────────────────────────────────────────
+// ─── UTILITIES ────────────────────────────────────────────────
 function escHTML(s) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  if (typeof s !== 'string') return '';
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function escRE(s) {

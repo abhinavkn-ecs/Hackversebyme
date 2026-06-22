@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="PhishGuard Secure — a local-first, zero-leakage phishing detection sandbox. Analyze emails, SMS, and URLs for cyber threats entirely in your browser."/>
+  <meta name="theme-color" content="#0b0c10"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>"/>
   <title>PhishGuard Secure – Cyber Threat Detection Console</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
@@ -21,145 +24,147 @@
     </button>
   </header>
 
-  <!-- Two-Column Desktop Dashboard -->
-  <div class="main-grid">
-    
-    <!-- Left Column: Inputs & Highlight View -->
-    <div class="col-left">
-      <!-- Input Card -->
-      <div class="card">
-        <div class="card-title">Threat Scan Console</div>
-        
-        <div class="form-group">
-          <label for="scanInput">Target Message / Email Copy</label>
-          <textarea id="scanInput" class="form-textarea" placeholder="Paste email body text, headers, or SMS notification copy here..."></textarea>
-          <div id="validationError" class="error-msg">Please paste a message or email to scan.</div>
-          <div class="preset-templates-row">
-            <span class="preset-label">Test Snippets:</span>
-            <button type="button" class="preset-btn" data-preset="phish-bank" title="Load Chase Bank spoofing template">🚨 Chase Phish</button>
-            <button type="button" class="preset-btn" data-preset="phish-urgency" title="Load urgent password reset template">⏳ Urgent Reset</button>
-            <button type="button" class="preset-btn" data-preset="safe-work" title="Load safe corporate communication template">✅ Safe Memo</button>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="urlInput">Domain / Link (Optional)</label>
-          <input type="text" id="urlInput" class="form-input" placeholder="e.g. login-secure-paypal.xyz or https://secure-verification.com"/>
-        </div>
-
-        <!-- Button actions -->
-        <div class="button-row">
-          <button id="scanDetectBtn" class="btn btn-primary">Scan Payload</button>
-          <button id="scanClearBtn" class="btn btn-secondary">Clear & Reset</button>
-        </div>
-
-        <!-- Safe message banner -->
-        <div id="safeMessageBanner" class="safe-message-banner" style="display: none;">
-          <span>✓</span> This message looks safe. No phishing patterns detected.
-        </div>
-      </div>
-
-      <!-- Highlight Card -->
-      <div class="card">
-        <div class="card-title">Payload Highlight View</div>
-        <div id="highlightText" class="highlight-view-box">Scan output highlights will appear here...</div>
-        
-        <!-- Legend of colors -->
-        <div class="color-legend">
-          <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-urgency-bg); border: 1px solid var(--hl-urgency-border);"></span>
-            <span>Urgency</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-cred-bg); border: 1px solid var(--hl-cred-border);"></span>
-            <span>Harvesting</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-url-bg); border: 1px solid var(--hl-url-border);"></span>
-            <span>Untrusted Domain</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-finance-bg); border: 1px solid var(--hl-finance-border);"></span>
-            <span>Financial Bait</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-social-bg); border: 1px solid var(--hl-social-border);"></span>
-            <span>Social Engineering</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-imperson-bg); border: 1px solid var(--hl-imperson-border);"></span>
-            <span>Brand Impersonation</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background-color: var(--hl-sensitive-bg); border: 1px solid var(--hl-sensitive-border);"></span>
-            <span>Sensitive Info</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right Column: Results Section -->
-    <div class="col-right">
-      <div id="scanResult" style="display: none;">
-        <!-- Score Card -->
+  <main>
+    <!-- Two-Column Desktop Dashboard -->
+    <div class="main-grid">
+      
+      <!-- Left Column: Inputs & Highlight View -->
+      <div class="col-left">
+        <!-- Input Card -->
         <div class="card">
-          <div class="card-title">Composite Threat Index</div>
-          <div class="score-gauge-wrapper">
-            <svg class="score-gauge" viewBox="0 0 100 100">
-              <circle class="score-gauge-bg" cx="50" cy="50" r="40"></circle>
-              <circle class="score-gauge-fill" id="scoreGaugeFill" cx="50" cy="50" r="40"></circle>
-            </svg>
-            <div class="score-gauge-content">
-              <div class="score-display" id="scoreNum">0<span>/100</span></div>
-              <span id="severityBadge" class="severity-badge">Safe</span>
+          <div class="card-title">Threat Scan Console</div>
+          
+          <div class="form-group">
+            <label for="scanInput">Target Message / Email Copy</label>
+            <textarea id="scanInput" class="form-textarea" placeholder="Paste email body text, headers, or SMS notification copy here…"></textarea>
+            <div id="validationError" class="error-msg" role="alert">Please paste a message or email to scan.</div>
+            <div class="preset-templates-row">
+              <span class="preset-label">Test Snippets:</span>
+              <button type="button" class="preset-btn" data-preset="phish-bank" title="Load Chase Bank spoofing template">🚨 Chase Phish</button>
+              <button type="button" class="preset-btn" data-preset="phish-urgency" title="Load urgent password reset template">⏳ Urgent Reset</button>
+              <button type="button" class="preset-btn" data-preset="safe-work" title="Load safe corporate communication template">✅ Safe Memo</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="urlInput">Domain / Link (Optional)</label>
+            <input type="text" id="urlInput" class="form-input" placeholder="e.g. login-secure-paypal.xyz or https://secure-verification.com"/>
+          </div>
+
+          <!-- Button actions -->
+          <div class="button-row">
+            <button id="scanDetectBtn" class="btn btn-primary">Scan Payload</button>
+            <button id="scanClearBtn" class="btn btn-secondary" aria-label="Clear all inputs and reset results">Clear &amp; Reset</button>
+          </div>
+
+          <!-- Safe message banner -->
+          <div id="safeMessageBanner" class="safe-message-banner" role="status" style="display: none;">
+            <span>✓</span> This message looks safe. No phishing patterns detected.
+          </div>
+        </div>
+
+        <!-- Highlight Card -->
+        <div class="card">
+          <div class="card-title">Payload Highlight View</div>
+          <div id="highlightText" class="highlight-view-box" aria-live="polite">Scan output highlights will appear here…</div>
+          
+          <!-- Legend of colors -->
+          <div class="color-legend" aria-label="Highlight category legend">
+            <div class="legend-item">
+              <span class="legend-dot" style="background-color: var(--hl-urgency-bg); border: 1px solid var(--hl-urgency-border);"></span>
+              <span>Urgency</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background-color: var(--hl-cred-bg); border: 1px solid var(--hl-cred-border);"></span>
+              <span>Harvesting</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background-color: var(--hl-url-bg); border: 1px solid var(--hl-url-border);"></span>
+              <span>Untrusted Domain</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background-color: var(--hl-finance-bg); border: 1px solid var(--hl-finance-border);"></span>
+              <span>Financial Bait</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background-color: var(--hl-social-bg); border: 1px solid var(--hl-social-border);"></span>
+              <span>Social Engineering</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background-color: var(--hl-imperson-bg); border: 1px solid var(--hl-imperson-border);"></span>
+              <span>Brand Impersonation</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background-color: var(--hl-sensitive-bg); border: 1px solid var(--hl-sensitive-border);"></span>
+              <span>Sensitive Info</span>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Explainer Panel (Threat Breakdown) -->
-        <div class="card">
-          <div class="card-title">Threat Breakdown</div>
-          <div id="breakdownPanel" class="explain-list">
-            <!-- Dynamically populated categories -->
+      <!-- Right Column: Results Section -->
+      <div class="col-right">
+        <div id="scanResult" style="display: none;">
+          <!-- Score Card -->
+          <div class="card">
+            <div class="card-title">Composite Threat Index</div>
+            <div class="score-gauge-wrapper">
+              <svg class="score-gauge" viewBox="0 0 100 100" aria-hidden="true">
+                <circle class="score-gauge-bg" cx="50" cy="50" r="40"></circle>
+                <circle class="score-gauge-fill" id="scoreGaugeFill" cx="50" cy="50" r="40"></circle>
+              </svg>
+              <div class="score-gauge-content">
+                <div class="score-display" id="scoreNum" aria-label="Threat score">0<span>/100</span></div>
+                <span id="severityBadge" class="severity-badge">Safe</span>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <!-- AI Analysis -->
-        <div class="card">
-          <div class="card-title">AI Analysis</div>
-          <div class="ai-analysis-text">
-            <span id="aiAnalysisText">AI analysis results will load here...</span>
+          <!-- Explainer Panel (Threat Breakdown) -->
+          <div class="card">
+            <div class="card-title">Threat Breakdown</div>
+            <div id="breakdownPanel" class="explain-list" aria-live="polite">
+              <!-- Dynamically populated categories -->
+            </div>
           </div>
-        </div>
 
-        <!-- Domain Audit -->
-        <div class="card">
-          <div class="card-title-row">
-            <span class="card-title" style="margin: 0; padding: 0; border: none;">Domain Integrity Audit</span>
-            <span class="brand-info-icon-wrapper" id="brandInfoBtn">ℹ️ Brand List</span>
+          <!-- AI Analysis -->
+          <div class="card">
+            <div class="card-title">AI Analysis</div>
+            <div class="ai-analysis-text">
+              <span id="aiAnalysisText">AI analysis results will load here…</span>
+            </div>
           </div>
-          
-          <div id="brandListCard" class="brand-list-card">
-            Checks for: PayPal, Google, Apple, Microsoft, Amazon, Netflix, Facebook, Instagram, Bank of America, Chase, Wells Fargo, Citibank, FedEx, UPS, DHL, USPS, DocuSign, Dropbox, Zoom.
-          </div>
-          
-          <div id="domainAuditList" style="margin-top: 0.75rem;">
-            Submit a domain/URL to inspect.
+
+          <!-- Domain Audit -->
+          <div class="card">
+            <div class="card-title-row">
+              <span class="card-title" style="margin: 0; padding: 0; border: none;">Domain Integrity Audit</span>
+              <button class="brand-info-icon-wrapper" id="brandInfoBtn" aria-expanded="false" aria-controls="brandListCard">ℹ️ Brand List</button>
+            </div>
+            
+            <div id="brandListCard" class="brand-list-card" role="region" aria-label="Supported brands for spoofing detection">
+              Checks for: PayPal, Google, Apple, Microsoft, Amazon, Netflix, Facebook, Instagram, Bank of America, Chase, Wells Fargo, Citibank, FedEx, UPS, DHL, USPS, DocuSign, Dropbox, Zoom.
+            </div>
+            
+            <div id="domainAuditList" style="margin-top: 0.75rem;">
+              Submit a domain/URL to inspect.
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-  </div>
+    </div>
+  </main>
 
   <!-- Bottom Collapsible Logs Panel -->
-  <div class="card history-section" id="historySection">
-    <div class="history-header" id="toggleHistoryBtn">
+  <section class="card history-section" id="historySection" aria-label="Scan history logs">
+    <div class="history-header" id="toggleHistoryBtn" role="button" tabindex="0" aria-expanded="true" aria-controls="historyContent">
       <div class="history-title">Scan History Logs</div>
-      <button id="exportLogsBtn" class="btn btn-secondary btn-ghost small">Export Logs as JSON</button>
+      <button id="exportLogsBtn" class="btn btn-secondary btn-ghost small" aria-label="Export scan logs as JSON file">Export Logs as JSON</button>
     </div>
     
-    <div class="history-content">
+    <div class="history-content" id="historyContent">
       <div class="table-wrapper">
         <table>
           <thead>
@@ -179,7 +184,7 @@
         Tip: Export your logs regularly — localStorage is cleared if browser data is reset.
       </div>
     </div>
-  </div>
+  </section>
 
 </div>
 

@@ -137,6 +137,47 @@ body.light-theme .theme-icon-dark { display: block; }
 body:not(.light-theme) .theme-icon-light { display: block; }
 body:not(.light-theme) .theme-icon-dark { display: none; }
 
+/* Light-theme specific overrides */
+body.light-theme h1 {
+  background: linear-gradient(135deg, #0f172a 0%, #475569 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.light-theme h1::before {
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+body.light-theme .highlight-view-box {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+body.light-theme .card:hover {
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08), 0 0 15px rgba(59, 130, 246, 0.04);
+}
+
+body.light-theme .card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+body.light-theme .table-wrapper {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+body.light-theme tr:hover td {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+body.light-theme .btn-secondary:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+body.light-theme .explain-examples {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -846,4 +887,35 @@ body.light-theme .score-gauge-bg {
   border-radius: 4px;
 }
 
+/* Custom scrollbar for highlight view */
+.highlight-view-box::-webkit-scrollbar {
+  width: 6px;
+}
 
+.highlight-view-box::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.highlight-view-box::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+body.light-theme .highlight-view-box::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Focus-visible outlines for keyboard navigation */
+.btn:focus-visible,
+.preset-btn:focus-visible,
+.theme-toggle-btn:focus-visible,
+.brand-info-icon-wrapper:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+#toggleHistoryBtn:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: -2px;
+  border-radius: 4px;
+}
